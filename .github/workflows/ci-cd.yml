@@ -1,0 +1,33 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    container:
+      image: quay.io/centos/centos:stream9
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Install Docker
+        run: |
+          yum -y update
+          yum -y install docker
+          dockerd &
+          sleep 5
+      
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.anikettevare }}
+          password: ${{ secrets.Anikett@02 }}
+      
+      - name: Build and Push Docker Image
+        run: |
+          docker build -t ${{ secrets.anikettevare }}/devops-demo:latest .
+          docker push ${{ secrets.anikettevare }}/devops-demo:latest
+
